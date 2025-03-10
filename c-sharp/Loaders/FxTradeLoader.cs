@@ -8,79 +8,81 @@ namespace HmxLabs.TechTest.Loaders
 {
     public class FxTradeLoader : ITradeLoader
     {
-        public string? DataFile { get; set; }
+        private string? _dataFile;
+        public string? DataFile
+        {
+            get => _dataFile;
+            set => _dataFile = value;
+        }
 
         public IEnumerable<ITrade> LoadTrades()
         {
             if (string.IsNullOrEmpty(DataFile))
-                throw new InvalidOperationException("DataFile must be set.");
+                throw new InvalidOperationException("DataFile property must be set.");
 
             string filePath = DataFile;
             if (!Path.IsPathRooted(filePath))
             {
                 filePath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
             }
+
             if (!File.Exists(filePath))
-                throw new FileNotFoundException($"The file '{filePath}' was not found.");
+                throw new FileNotFoundException($"The file '{filePath}' does not exist.");
 
-            int lineNumber = 0;
-            foreach (var line in File.ReadLines(filePath))
+            var lines = File.ReadAllLines(filePath);
+
+
+            for (int i = 2; i < lines.Length; i++)
             {
-                lineNumber++;
-                // Assume line 1 is a metadata header and line 2 is column headers.
-                if (lineNumber <= 2)
-                    continue;
-
+                var line = lines[i];
                 if (line.StartsWith("END", StringComparison.OrdinalIgnoreCase))
-                    break;
+                    break; 
 
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
 
-                // Use the '¬' delimiter.
                 var parts = line.Split('¬');
                 if (parts.Length < 9)
-                    continue; // skip invalid records
-
-                // Determine trade type
-                string type = parts[0].Trim();
+                    continue; 
+                string typeField = parts[0].Trim();
                 string tradeType;
-                if (type.Equals("FxSpot", StringComparison.OrdinalIgnoreCase))
+                if (typeField.Equals("FxSpot", StringComparison.OrdinalIgnoreCase))
                 {
                     tradeType = FxTrade.FxSpotTradeType;
                 }
-                else if (type.Equals("FxFwd", StringComparison.OrdinalIgnoreCase) ||
-                         type.Equals("FxForward", StringComparison.OrdinalIgnoreCase))
+                else if (typeField.Equals("FxFwd", StringComparison.OrdinalIgnoreCase) ||
+                         typeField.Equals("FxForward", StringComparison.OrdinalIgnoreCase))
                 {
                     tradeType = FxTrade.FxForwardTradeType;
                 }
                 else
                 {
-                    continue; // unknown type, skip
+                    continue;
                 }
 
-                // Parse fields (assuming columns: Type, TradeDate, Ccy1, Ccy2, Amount, Rate, ValueDate, Counterparty, TradeId)
                 DateTime tradeDate = DateTime.Parse(parts[1].Trim(), CultureInfo.InvariantCulture);
                 string ccy1 = parts[2].Trim();
                 string ccy2 = parts[3].Trim();
-                string instrument = ccy1 + ccy2; // instrument is the concatenation of Ccy1 and Ccy2.
+                string instrument = ccy1 + ccy2;
                 double notional = double.Parse(parts[4].Trim(), CultureInfo.InvariantCulture);
                 double rate = double.Parse(parts[5].Trim(), CultureInfo.InvariantCulture);
                 DateTime valueDate = DateTime.Parse(parts[6].Trim(), CultureInfo.InvariantCulture);
                 string counterparty = parts[7].Trim();
                 string tradeId = parts[8].Trim();
 
-                // Yield the trade immediately.
-                yield return new FxTrade(tradeId, tradeType)
+                var fxTrade = new FxTrade(tradeId, tradeType)
                 {
                     TradeDate = tradeDate,
                     Instrument = instrument,
-                    Counterparty = counterparty,
                     Notional = notional,
                     Rate = rate,
-                    ValueDate = valueDate
+                    ValueDate = valueDate,
+                    Counterparty = counterparty
                 };
+
+                yield return fxTrade;
             }
+
         }
     }
 }
