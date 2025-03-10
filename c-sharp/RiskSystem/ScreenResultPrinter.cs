@@ -1,4 +1,5 @@
-﻿using HmxLabs.TechTest.Models;
+﻿using System;
+using HmxLabs.TechTest.Models;
 
 namespace HmxLabs.TechTest.RiskSystem
 {
@@ -8,12 +9,27 @@ namespace HmxLabs.TechTest.RiskSystem
         {
             foreach (var result in results_)
             {
-                // Write code here to print out the results such that we have : 
-                // TradeID : Result : Error
-                // If there is no result then the output should be :
-                // TradeID : Error
-                // If there is no error the output should be :
-                // TradeID : Result
+                string tradeId = result.TradeId;
+                string resultText = result.Result.HasValue ? result.Result.Value.ToString() : "";
+                string errorText = string.IsNullOrEmpty(result.Error) ? "" : result.Error;
+
+                // Print based on which values are present.
+                if (!string.IsNullOrEmpty(resultText) && !string.IsNullOrEmpty(errorText))
+                {
+                    Console.WriteLine($"{tradeId} : {resultText} : {errorText}");
+                }
+                else if (!string.IsNullOrEmpty(resultText))
+                {
+                    Console.WriteLine($"{tradeId} : {resultText}");
+                }
+                else if (!string.IsNullOrEmpty(errorText))
+                {
+                    Console.WriteLine($"{tradeId} : {errorText}");
+                }
+                else
+                {
+                    Console.WriteLine($"{tradeId} :");
+                }
             }
         }
     }

@@ -2,6 +2,6 @@
 {
     public interface IPricingEngine
     {
-        void Price(ITrade trade_, IScalarResultReceiver resultReceiver_);
+        public abstract void Price(ITrade trade_, IScalarResultReceiver resultReceiver_);
     }
 }

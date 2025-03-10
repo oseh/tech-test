@@ -6,7 +6,7 @@
         {
             Delay = 2000;
             AddSupportedTradeType("FxSpot");
-            AddSupportedTradeType("FxFwd");
+            AddSupportedTradeType("FxForward");
         }
     }
 }

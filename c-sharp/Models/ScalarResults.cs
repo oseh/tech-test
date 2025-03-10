@@ -14,16 +14,16 @@ namespace HmxLabs.TechTest.Models
                     return null;
                 }
 
-                    double? priceResult = null;
-                    string? error = null;
-                    if (_results.ContainsKey(tradeId_))
-                    {
-                        priceResult = _results[tradeId_];
-                    }
-                    if (_errors.ContainsKey(tradeId_))
-                    {
-                        error = _errors[tradeId_];
-                    }
+                double? priceResult = null;
+                string? error = null;
+                if (_results.ContainsKey(tradeId_))
+                {
+                    priceResult = _results[tradeId_];
+                }
+                if (_errors.ContainsKey(tradeId_))
+                {
+                    error = _errors[tradeId_];
+                }
 
                 return new ScalarResult(tradeId_, priceResult, error);
             }
@@ -31,12 +31,7 @@ namespace HmxLabs.TechTest.Models
 
         public bool ContainsTrade(string tradeId_)
         {
-            if (_results.ContainsKey(tradeId_) || _errors.ContainsKey(tradeId_))
-            {
-                return true;
-            }
-
-            return false;
+            return _results.ContainsKey(tradeId_) || _errors.ContainsKey(tradeId_);
         }
 
         public void AddResult(string tradeId_, double result_)
@@ -51,13 +46,16 @@ namespace HmxLabs.TechTest.Models
 
         public IEnumerator<ScalarResult> GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            HashSet<string> tradeIds = new HashSet<string>(_results.Keys);
+            tradeIds.UnionWith(_errors.Keys);
+
+            foreach (var tradeId in tradeIds)
+            {
+                yield return this[tradeId]!;
+            }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new System.NotImplementedException();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         private readonly Dictionary<string, double> _results = new Dictionary<string, double>();
         private readonly Dictionary<string, string?> _errors = new Dictionary<string, string?>();

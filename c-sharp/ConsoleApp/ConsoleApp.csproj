@@ -12,6 +12,14 @@
       <ProjectReference Include="..\Loaders\Loaders.csproj" />
       <ProjectReference Include="..\Models\Models.csproj" />
       <ProjectReference Include="..\RiskSystem\RiskSystem.csproj" />
+      <ProjectReference Include="..\Pricers\Pricers.csproj" />
+        <None Include="..\Loaders\TradeData\BondTrades.dat">
+    <Link>TradeData\BondTrades.dat</Link>
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
+  <None Include="..\Loaders\TradeData\FxTrades.dat">
+    <Link>TradeData\FxTrades.dat</Link>
+    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  </None>
     </ItemGroup>
-
 </Project>

@@ -15,10 +15,10 @@ namespace HmxLabs.TechTest.RiskSystem
         private IEnumerable<ITradeLoader> GetTradeLoaders()
         {
             var loaders = new List<ITradeLoader>();
-            ITradeLoader loader = new BondTradeLoader {DataFile = @"TradeData/BondTrades.dat"};
+            ITradeLoader loader = new BondTradeLoader {DataFile =  @"../Loaders/TradeData/BondTrades.dat"};
             loaders.Add(loader);
 
-            loader = new FxTradeLoader { DataFile = @"TradeData/FxTrades.dat" };
+            loader = new FxTradeLoader { DataFile =  @"../Loaders/TradeData/FxTrades.dat" };
             loaders.Add(loader);
             
             return loaders;
